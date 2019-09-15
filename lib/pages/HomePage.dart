@@ -32,7 +32,6 @@ class _StatefulListViewState extends State<StatefulListView> {
     switch (await showDialog(
         context: context,
         /*it shows a popup with few options which you can select, for option we
-        created enums which we can use with switch statement, in this first switch
         will wait for the user to select the option which it can use with switch cases*/
         child: new SimpleDialog(
           title: new Text(
@@ -177,6 +176,7 @@ class _StatefulListViewState extends State<StatefulListView> {
                     .where("kota", isEqualTo: _value)
                     .snapshots(),
                 builder: (context, snapshot) {
+                  if(snapshot.hasData){
                   if (snapshot.data.documents.length != 0) {
                     return LiquidPullToRefresh(
                         color: Colors.white,
@@ -227,7 +227,11 @@ class _StatefulListViewState extends State<StatefulListView> {
                       child: Text("Kota $_value belum memiliki produk apapun"),
                     );
                   }
-                }),
+                }                   
+                 return Center(child: CircularProgressIndicator());
+
+                }
+                ),
           ),
         )
       ],
