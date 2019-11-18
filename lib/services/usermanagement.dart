@@ -33,14 +33,17 @@ class UserManagement {
     FirebaseUser user = result.user;
     var a = await Firestore.instance.collection('/users').add({
       'email': user.email,
-      'uid': user.uid,
-      'namadepan': data.namadepan,
-      'namabelakang': data.namabelakang,
-      'noHP': data.noHP
+      'id': user.uid,
+      'nama': data.namadepan + " " + data.namabelakang,
+      'noHP': data.noHP,
+      'toko': false,
+      'photourl':
+          'https://www.clipartwiki.com/clipimg/detail/197-1979569_no-profile.png',
+      'poin': 0
     }).then((value) {
       Navigator.pop(context);
       Fluttertoast.showToast(
-          msg: "Login Berhasil",
+          msg: "Berhasil membuat akun, silahkan login",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 3,
@@ -65,9 +68,44 @@ class UserManagement {
   }
 
   signIn(String email, String password) async {
+    SharedPreferences prefrences;
+    prefrences = await SharedPreferences.getInstance();
+
     AuthResult results = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     FirebaseUser user = results.user;
+    if (user != null) {
+      final QuerySnapshot result = await Firestore.instance
+          .collection("users")
+          .where("id", isEqualTo: user.uid)
+          .getDocuments();
+      final List<DocumentSnapshot> documents = result.documents;
+      if (documents.length == 0) {
+        Firestore.instance.collection("users").document(user.uid).setData({
+          "id": user.uid,
+          "photourl": user.photoUrl,
+          "nama": user.displayName,
+          "email": user.email,
+          "masihokeh": false,
+          "poin": 0
+        });
+
+        await prefrences.setString("id", user.uid);
+        await prefrences.setString("nama", user.displayName);
+        await prefrences.setString("email", user.email);
+        await prefrences.setString("photourl", user.photoUrl);
+        await prefrences.setBool("masihokeh", false);
+        await prefrences.setInt("poin", 0);
+      } else {
+        await prefrences.setString("id", documents[0]['id']);
+        await prefrences.setString("nama", documents[0]['nama']);
+        await prefrences.setString("email", documents[0]['email']);
+        await prefrences.setString("photourl", documents[0]['photourl']);
+        await prefrences.setBool("masihokeh", documents[0]['masihokeh']);
+        await prefrences.setInt("poin", documents[0]['poin']);
+      }
+      Fluttertoast.showToast(msg: "Login Berhasil");
+    }
     print(user.uid);
     return user;
   }

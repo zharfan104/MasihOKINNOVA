@@ -96,7 +96,7 @@ class AddProdukState extends State<AddProduk> {
         "alamatmasihokeh": alamatmasihokeh,
         "photomasihokeh": photomasihokeh,
         "photo": url,
-        "jumlah": controllerjumlah.text,
+        "jumlah": int.parse(controllerjumlah.text),
         "kota": kota[0].toUpperCase() + kota.substring(1)
       });
       Application.router.navigateTo(context, "/landing");
@@ -153,10 +153,10 @@ class AddProdukState extends State<AddProduk> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          "MasihOK",
-          style: TextStyle(
-              color: Colors.black, fontFamily: "pacifico", fontSize: 30.0),
+          "Add Product",
+          style: TextStyle(color: Colors.black, fontSize: 20.0),
         ),
+        elevation: 0.0,
       ),
       body: ListView(
         children: <Widget>[
@@ -199,13 +199,6 @@ class AddProdukState extends State<AddProduk> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Deskripsi Produk",
-              style: TextStyle(fontSize: 30.0),
-            ),
-          ),
-          Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               controller: controllernama,
@@ -222,8 +215,8 @@ class AddProdukState extends State<AddProduk> {
                     FontAwesomeIcons.dotCircle,
                     color: Colors.black38,
                   ),
-                  hintText: 'Masukkan Nama Produk',
-                  labelText: 'Nama Produk',
+                  hintText: 'Enter the product name',
+                  labelText: 'Product Name',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
             ),
@@ -245,8 +238,8 @@ class AddProdukState extends State<AddProduk> {
                     FontAwesomeIcons.tag,
                     color: Colors.black38,
                   ),
-                  hintText: 'Harga Awal',
-                  labelText: 'Harga Awal',
+                  hintText: 'Estimated Real Price',
+                  labelText: 'Before Price',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.number,
             ),
@@ -268,29 +261,26 @@ class AddProdukState extends State<AddProduk> {
                     FontAwesomeIcons.tag,
                     color: Colors.black38,
                   ),
-                  hintText: 'Harga Sekarang',
-                  labelText: 'Harga Sekarang',
+                  hintText: 'After Price',
+                  labelText: 'After Price',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.number,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0, right: 10.0, top: 10.0),
-            child: DateTimePickerFormField(
-              inputType: inputType,
-              format: formats[inputType],
-              editable: editable,
-              decoration: InputDecoration(
-                  icon: Icon(FontAwesomeIcons.clock),
-                  labelText: 'Waktu Awal Pick Up',
-                  hasFloatingPlaceholder: true),
-              onChanged: (dt) => setState(() => date1 = dt),
-            ),
+          DateTimePickerFormField(
+            inputType: inputType,
+            format: formats[inputType],
+            editable: editable,
+            decoration: InputDecoration(
+                icon: Icon(FontAwesomeIcons.clock),
+                labelText: 'Pick Up Time 1',
+                hasFloatingPlaceholder: true),
+            onChanged: (dt) => setState(() => date1 = dt),
           ),
           Center(
             child: Text(
               "-",
-              style: TextStyle(fontSize: 38.0),
+              style: TextStyle(fontSize: 38.0, color: Colors.grey),
             ),
           ),
           Padding(
@@ -304,7 +294,7 @@ class AddProdukState extends State<AddProduk> {
               editable: editable,
               decoration: InputDecoration(
                   icon: Icon(FontAwesomeIcons.clock),
-                  labelText: 'Waktu Akhir Pick Up',
+                  labelText: 'Pick Up Time 2',
                   hasFloatingPlaceholder: true),
               onChanged: (dt) => setState(() => date2 = dt),
             ),
@@ -328,8 +318,8 @@ class AddProdukState extends State<AddProduk> {
                     FontAwesomeIcons.stickyNote,
                     color: Colors.black38,
                   ),
-                  hintText: 'Deskripsi Produk',
-                  labelText: 'Deskripsi Produk',
+                  hintText: 'Product Description',
+                  labelText: 'Product Description',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
             ),
@@ -352,7 +342,7 @@ class AddProdukState extends State<AddProduk> {
                     color: Colors.black38,
                   ),
                   hintText: '51',
-                  labelText: 'Jumlah Produk',
+                  labelText: 'Stock',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.number,
             ),
@@ -379,7 +369,7 @@ class AddProdukState extends State<AddProduk> {
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Text(
-                      "Tambah Produk",
+                      "Add Product",
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),

@@ -87,10 +87,11 @@ class Login extends State<LoginScreen> {
       if (documents.length == 0) {
         Firestore.instance.collection("users").document(user.uid).setData({
           "id": user.uid,
-          "profilePicture": user.photoUrl,
+          "photourl": user.photoUrl,
           "nama": user.displayName,
           "email": user.email,
-          "masihokeh": false
+          "masihokeh": false,
+          "poin": 0
         });
 
         await prefrences.setString("id", user.uid);
@@ -98,12 +99,14 @@ class Login extends State<LoginScreen> {
         await prefrences.setString("email", user.email);
         await prefrences.setString("photourl", user.photoUrl);
         await prefrences.setBool("masihokeh", false);
+        await prefrences.setInt("poin", 0);
       } else {
         await prefrences.setString("id", documents[0]['id']);
         await prefrences.setString("nama", documents[0]['nama']);
         await prefrences.setString("email", documents[0]['email']);
-        await prefrences.setString("photourl", documents[0]['profilePicture']);
+        await prefrences.setString("photourl", documents[0]['photourl']);
         await prefrences.setBool("masihokeh", documents[0]['masihokeh']);
+        await prefrences.setInt("poin", documents[0]['poin']);
       }
       Fluttertoast.showToast(msg: "Login Berhasil");
       setState(() {
@@ -152,12 +155,15 @@ class Login extends State<LoginScreen> {
                             fontSize: 48.0),
                       ),
                       Text(
-                        "Jadilah Penyelamat Makanan!",
+                        "Save Food, Save Earth!",
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: "futuras",
                             fontSize: 20.0),
                       ),
+                      SizedBox(
+                        height: 12.0,
+                      )
                     ],
                   ),
                 ),
@@ -291,7 +297,15 @@ class Login extends State<LoginScreen> {
                                           alignment: Alignment.bottomLeft,
                                           margin: EdgeInsets.only(left: 10.0),
                                           child: new GestureDetector(
-                                            onTap: () {},
+                                            onTap: () {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      "This Feature is under development",
+                                                  fontSize: 18.0,
+                                                  backgroundColor: Colors.grey,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  textColor: Colors.white);
+                                            },
                                             child: Text(
                                               'FORGOT PASSWORD?',
                                               style: TextStyle(
@@ -334,14 +348,6 @@ class Login extends State<LoginScreen> {
                                   SizedBox(
                                     height: 15.0,
                                   ),
-                                  Container(
-                                    height: 50.0,
-                                    child: SignInButton(
-                                      Buttons.Facebook,
-                                      text: "Log in with Facebook",
-                                      onPressed: () {},
-                                    ),
-                                  ),
                                   const SizedBox(height: 22.0),
                                 ]),
                           )) //login,
@@ -360,6 +366,7 @@ class Login extends State<LoginScreen> {
       // Email & password matched our validation rules
       // and are saved to email and password fields.
       print("asu");
+
       _performLogin();
     } else {
       showInSnackBar('Please fix the errors in red before submitting.');
@@ -371,9 +378,16 @@ class Login extends State<LoginScreen> {
   }
 
   void _performLogin() async {
+    setState(() {
+      loading = true;
+    });
     try {
       FirebaseUser user = await UserManagement().signIn(email, password);
-      Application.router.navigateTo(context, "/");
+      Application.router.navigateTo(context, "/landing");
+      setState(() {
+        loading = true;
+      });
+      Application.router.navigateTo(context, "/landing");
     } catch (e) {
       print(e);
       Fluttertoast.showToast(
@@ -384,6 +398,10 @@ class Login extends State<LoginScreen> {
           backgroundColor: Colors.grey.withOpacity(0.8),
           textColor: Colors.white,
           fontSize: 16.0);
+      setState(() {
+        loading = true;
+      });
+      Application.router.navigateTo(context, "/landing");
     }
   }
 

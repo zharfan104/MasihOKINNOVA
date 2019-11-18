@@ -88,7 +88,7 @@ class _InstantSearchState extends State<InstantSearch> {
               String alamatmasihokeh = tempSearchStore[index]["alamat"] ?? "a";
               String photomasihokeh =
                   tempSearchStore[index]["photomasihokeh"] ?? "a";
-              String sisa = tempSearchStore[index]["jumlah"] ?? "a";
+              String sisa = tempSearchStore[index]["jumlah"] ?? 10;
               String photo = tempSearchStore[index]["photo"] ?? "a";
               if (tempSearchStore.length != 0) {
                 return Hero(
@@ -103,15 +103,15 @@ class _InstantSearchState extends State<InstantSearch> {
                         heropicture: photomasihokeh,
                         deskripsi: deskripsiproduk,
                         id: index.toString(),
-                        jam: waktuawal.substring(12, 16),
+                        jam: waktuawal.substring(11, 16),
                         picture: photo,
                         produsen: namamasihokeh,
-                        sisa: sisa ?? "5"),
+                        sisa: sisa ?? 5),
                   ),
                 );
               } else {
                 return Center(
-                  child: Text("Maaf, makanan yang kamu cari tidak ada."),
+                  child: Text("Sorry, food not found."),
                 );
               }
             }),

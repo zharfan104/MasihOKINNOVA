@@ -104,7 +104,7 @@ class _StatefulListViewState extends State<StatefulListView> {
       deskripsi:
           "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
       jam: "21.00-22.00",
-      sisa: "3",
+      sisa: 3,
       hargaAsal: "7000",
       hargaJadi: "3000",
       heropicture: "assets/indomaret.jpg",
@@ -115,47 +115,16 @@ class _StatefulListViewState extends State<StatefulListView> {
     refreshList();
     return null;
   }
-
   @override
   void dispose() {
     super.dispose();
     //this method not called when user press android back button or quit
-    print('dispose');
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: Icon(
-              Icons.menu,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          title: Text(
-            "MasihOK",
-            style: TextStyle(
-                color: Colors.black, fontFamily: "pacifico", fontSize: 30.0),
-          ),
-          actions: <Widget>[
-            MaterialButton(
-              onPressed: _askUser,
-              child: Text(_value,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Roboto",
-                  )),
-            )
-          ],
-        ),
+     
         Container(
           width: MediaQuery.of(context).size.width,
           color: Colors.white,
@@ -188,43 +157,60 @@ class _StatefulListViewState extends State<StatefulListView> {
                           controller: scrollController,
                           itemCount: snapshot.data.documents.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Hero(
-                              tag: index,
-                              child: SingleCardProduk(
-                                nama: snapshot.data.documents[index]["nama"] +
-                                    "-" +
-                                    snapshot.data.documents[index]["uid"],
-                                produk: Produk(
-                                    nama: snapshot.data.documents[index]
-                                        ["nama"],
-                                    alamat: snapshot.data.documents[index]
-                                        ["alamatmasihokeh"],
-                                    hargaAsal: snapshot.data.documents[index]
-                                        ["hargaawal"],
-                                    hargaJadi: snapshot.data.documents[index]
-                                        ["hargasekarang"],
-                                    heropicture: snapshot.data.documents[index]
-                                        ["phototoko"],
-                                    deskripsi: snapshot.data.documents[index]
-                                        ["nama"],
-                                    id: index.toString(),
-                                    jam: snapshot
-                                        .data.documents[index]["waktuambil2"]
-                                        .substring(12, 16),
-                                    picture: snapshot.data.documents[index]
-                                        ["photo"],
-                                    produsen: snapshot.data.documents[index]
-                                        ["namamasihokeh"],
-                                    sisa: snapshot.data.documents[index]
-                                            ["jumlah"] ??
-                                        "5"),
-                              ),
+                            print(index);
+                            return StreamBuilder(
+     stream: Firestore.instance
+                    .collection("masihokeh")
+                    .where("uid", isEqualTo: snapshot.data.documents[index]["uid"] ?? "")
+                    .snapshots(),                             
+                     builder: (context, snapshot2) {
+                   
+                                return Hero(
+                                  tag: index,
+                                  child: SingleCardProduk(
+                                    nama: snapshot.data.documents[index]["nama"] +
+                                        "-" +
+                                        snapshot.data.documents[index]["uid"],
+                                    produk: Produk(
+                                        nama: snapshot.data.documents[index]
+                                            ["nama"],
+                                        alamat: snapshot.data.documents[index]
+                                            ["alamatmasihokeh"],
+                                        hargaAsal: snapshot.data.documents[index]
+                                            ["hargaawal"],
+                                        hargaJadi: snapshot.data.documents[index]
+                                            ["hargasekarang"],
+                                        heropicture: snapshot.data.documents[index]
+                                            ["photomasihokeh"],
+                                        deskripsi: snapshot.data.documents[index]
+                                            ["nama"],
+                                        id: index.toString(),
+                                        jam:  snapshot
+                                            .data.documents[index]["waktuambil1"]
+                                            .substring(11, 16)+ " - " +snapshot
+                                            .data.documents[index]["waktuambil2"]
+                                            .substring(11, 16),
+                                        picture: snapshot.data.documents[index]
+                                            ["photo"],
+                                        produsen: snapshot.data.documents[index]
+                                            ["namamasihokeh"],
+                                          rating: snapshot2.hasData ? snapshot2.data.documents[0]
+                                            ["rating"] ?? 5.0 : 5.0,
+                                            totalrate: snapshot2.hasData ? snapshot2.data.documents[0]
+                                            ["totalrate"] ?? 1 : 1,
+                                            
+                                        sisa: snapshot.data.documents[index]
+                                                ["jumlah"] ??
+                                            5),
+                                  ),
+                                );
+                              }
                             );
                           },
                         ));
                   } else {
                     return Center(
-                      child: Text("Kota $_value belum memiliki produk apapun"),
+                      child: Text("This city doesnt have any products"),
                     );
                   }
                 }                   

@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:masihokeh/pages/chat/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:masihokeh/main.dart';
 
@@ -60,29 +62,23 @@ class Oderhistory extends State<OderHistory> {
   @override
   Widget build(BuildContext context) {
     if (loading == true) {
-      return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Colors.grey),
-              ),
-            ),
-          ),
-        ),
-      );
+      return Wait();
     } else {
       return StreamBuilder(
           stream: Firestore.instance
               .collection("order")
               .where("pembeliID", isEqualTo: uid)
+              .where("iscancel", isEqualTo: false)
+              .where("isdone", isEqualTo: false)
               .snapshots(),
           builder: (context, snapshot) {
-            if (snapshot.data.documents.length == 0 ||
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Wait();
+            } else if (snapshot.data.documents.length == 0 ||
                 snapshot.data.documents == null) {
+              print(snapshot.data.documents);
               return Center(
-                child: Text("Anda belum melakukan pemesanan apapun."),
+                child: Text("You have no order."),
               );
             } else {
               return ListView.builder(
@@ -122,16 +118,13 @@ class Oderhistory extends State<OderHistory> {
                                                     .substring(1) ??
                                             "lok4",
                                         style: TextStyle(
-                                          fontSize: 16.0,
+                                          fontSize: 20.0,
                                           fontStyle: FontStyle.normal,
                                           color: Colors.black87,
                                         ),
                                       ),
                                     ),
 
-                                    Container(
-                                      margin: EdgeInsets.only(top: 3.0),
-                                    ),
                                     Container(
                                       alignment: Alignment.topLeft,
                                       child: Text(
@@ -142,6 +135,7 @@ class Oderhistory extends State<OderHistory> {
                                             color: Colors.black54),
                                       ),
                                     ),
+
                                     Divider(
                                       height: 10.0,
                                       color: Colors.amber.shade500,
@@ -242,9 +236,10 @@ class Oderhistory extends State<OderHistory> {
                                           size: 20.0,
                                           color: Colors.amber.shade500,
                                         ),
-                                        Text(
-                                            "Rp. ${snapshot.data.documents[index]["alamat"]}" ??
+                                        AutoSizeText(
+                                            "${snapshot.data.documents[index]["alamat"]}" ??
                                                 "alamat tidak terdefinisi",
+                                            maxLines: 2,
                                             style: TextStyle(
                                                 fontSize: 13.0,
                                                 color: Colors.black54)),
@@ -269,47 +264,93 @@ class Oderhistory extends State<OderHistory> {
                                                 "/qrcode?orderID=$orderID");
                                           },
                                         )),
-                                        InkWell(
-                                          onTap: () {
-                                            String key = uid +
-                                                "-" +
-                                                snapshot.data.documents[index]
-                                                    ["produkID"];
-                                            print(key);
-                                            Firestore.instance
-                                                .collection("order")
-                                                .document(key)
-                                                .delete();
-                                            Fluttertoast.showToast(
-                                                msg:
-                                                    "Pemesanan Berhasil Dibatalkan");
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.cancel,
-                                                    color: Colors.white,
-                                                  ),
-                                                  Text(
-                                                    " Cancel Order",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )
-                                                ],
-                                              ),
+                                        Container(
+                                            alignment: Alignment.center,
+                                            child: FlatButton(
+                                              child: Text("Chat Seller"),
+                                              onPressed: () async {
+                                                List<dynamic> idbuyer = [
+                                                  snapshot.data.documents[index]
+                                                      ["pembeliID"]
+                                                ];
+                                                List<dynamic> idseller = [
+                                                  snapshot.data.documents[index]
+                                                      ["produsenID"]
+                                                ];
+                                                print(snapshot
+                                                        .data.documents[index]
+                                                    ["photourl"]);
+                                                await gotoChat(
+                                                    idbuyer, idseller);
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder:
+                                                            (context) => Chat(
+                                                                  peerId: snapshot
+                                                                          .data
+                                                                          .documents[index]
+                                                                      [
+                                                                      "produsenID"],
+                                                                  peerAvatar: snapshot
+                                                                          .data
+                                                                          .documents[index]
+                                                                      [
+                                                                      "photomasihokeh"],
+                                                                  nama: snapshot
+                                                                          .data
+                                                                          .documents[index]
+                                                                      [
+                                                                      "namaprodusen"],
+                                                                )));
+                                              },
+                                            )),
+                                      ],
+                                    ),
+
+                                    Container(
+                                      width: 130.0,
+                                      child: InkWell(
+                                        onTap: () {
+                                          String key = uid +
+                                              "-" +
+                                              snapshot.data.documents[index]
+                                                  ["produkID"];
+                                          print(key);
+                                          Firestore.instance
+                                              .collection("order")
+                                              .document(key)
+                                              .updateData({
+                                            "iscancel": true,
+                                            "israted": true
+                                          });
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  "Pemesanan Berhasil Dibatalkan");
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.cancel,
+                                                  color: Colors.white,
+                                                ),
+                                                Text(
+                                                  " Cancel Order",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )
+                                              ],
                                             ),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
                                     )
                                   ],
                                 ))))),
@@ -320,4 +361,37 @@ class Oderhistory extends State<OderHistory> {
           });
     }
   }
+}
+
+class Wait extends StatelessWidget {
+  const Wait({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+gotoChat(idbuyer, idseller) async {
+  print(idbuyer + idseller);
+  await Firestore.instance
+      .collection('masihokeh')
+      .document(idseller[0])
+      .updateData({"msgwith": FieldValue.arrayUnion(idbuyer)});
+  await Firestore.instance
+      .collection('users')
+      .document(idbuyer[0])
+      .updateData({"msgwith": FieldValue.arrayUnion(idseller)});
+  print("ou");
 }

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:masihokeh/komponen/SingleCardProduk.dart';
+import 'package:masihokeh/models/ItemProduk.dart';
 import 'package:polygon_clipper/polygon_clipper.dart';
 import 'package:masihokeh/main.dart';
 import 'package:fluro/fluro.dart';
@@ -31,83 +34,96 @@ var blueLight = Color(0xFFc1dbee);
 class ExplorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        child: ListView(
-          children: <Widget>[
-            SizedBox(height: 20.0),
-            MyAppBar(),
-            SizedBox(height: 16.0),
-            FoodListview(),
-            SizedBox(height: 16.0),
-            SelectTypeSection(),
-            SizedBox(height: 16.0),
-          ],
-        ));
-  }
-}
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(height: 20.0),
+        // SizedBox(height: 16.0),
+        FoodListview(),
+        SizedBox(height: 16.0),
+        SelectTypeSection(),
+        SizedBox(height: 0.0),
+          Expanded(
+          child: Container(
+            color: Colors.white,
+            child: StreamBuilder(
+                stream: Firestore.instance
+                    .collection("produk")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if(snapshot.hasData){
+                  if (snapshot.data.documents.length != 0) {
+                    return  ListView.builder(
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            print(index);
+                            return StreamBuilder(
+     stream: Firestore.instance
+                    .collection("masihokeh")
+                    .where("uid", isEqualTo: snapshot.data.documents[index]["uid"] ?? "")
+                    .snapshots(),                             
+                     builder: (context, snapshot2) {
+                                return Hero(
+                                  tag: index,
+                                  child: SingleCardProduk(
+                                    nama: snapshot.data.documents[index]["nama"] +
+                                        "-" +
+                                        snapshot.data.documents[index]["uid"],
+                                    produk: Produk(
+                                        nama: snapshot.data.documents[index]
+                                            ["nama"],
+                                        alamat: snapshot.data.documents[index]
+                                            ["alamatmasihokeh"],
+                                        hargaAsal: snapshot.data.documents[index]
+                                            ["hargaawal"],
+                                        hargaJadi: snapshot.data.documents[index]
+                                            ["hargasekarang"],
+                                        heropicture: snapshot.data.documents[index]
+                                            ["photomasihokeh"],
+                                        deskripsi: snapshot.data.documents[index]
+                                            ["nama"],
+                                        id: index.toString(),
+                                        jam:  snapshot
+                                            .data.documents[index]["waktuambil1"]
+                                            .substring(11, 16)+ " - " +snapshot
+                                            .data.documents[index]["waktuambil2"]
+                                            .substring(11, 16),
+                                        picture: snapshot.data.documents[index]
+                                            ["photo"],
+                                        produsen: snapshot.data.documents[index]
+                                            ["namamasihokeh"],
+                                          rating: snapshot2.hasData ? snapshot2.data.documents[0]
+                                            ["rating"] ?? 5.0 : 5.0,
+                                            totalrate: snapshot2.hasData ? snapshot2.data.documents[0]
+                                            ["totalrate"] ?? 1 : 1,
+                                            
+                                        sisa: snapshot.data.documents[index]
+                                                ["jumlah"] ??
+                                            5),
+                                  ),
+                                );
+                              }
+                            );
+                          },
+                        );
+                  } else {
+                    return Center(
+                      child: Text("No food around you."),
+                    );
+                  }
+                }                   
+                 return Center(child: CircularProgressIndicator());
 
-class MyAppbar extends StatelessWidget {
-  const MyAppbar({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomAppBar(
-      child: Container(
-        height: 200.0,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Icon(Icons.home),
-                  Text('Home', style: TextStyle(fontSize: 12.0))
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Icon(Icons.home),
-                  Text('Home', style: TextStyle(fontSize: 12.0))
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Icon(Icons.search, color: Colors.black45),
-                  Text('Search', style: TextStyle(fontSize: 12.0))
-                ],
-              ),
-              Container(
-                width: 100.0,
-              ),
-              Column(
-                children: <Widget>[
-                  Icon(Icons.shop, color: Colors.black45),
-                  Text(
-                    'Wishlist',
-                    style: TextStyle(fontSize: 12.0),
-                  )
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.shopping_cart,
-                    color: Colors.black45,
-                  ),
-                  Text('Cart', style: TextStyle(fontSize: 12.0))
-                ],
-              ),
-            ],
+                }
+                ),
           ),
-        ),
-      ),
+        )
+      ],
     );
   }
 }
+
 
 class MyActionButton extends StatelessWidget {
   const MyActionButton({
@@ -228,13 +244,13 @@ class FoodListview extends StatelessWidget {
           children: <Widget>[
             ItemCard(
               gambar: "assets/pisang.jpg",
-              tulisan1: "Diskon 50%",
-              tulisan2: "Untuk Tiap Pembelian Lebih dari 3",
+              tulisan1: "50% Off",
+              tulisan2: "For every product from indomaret",
             ),
             ItemCard(
               gambar: "assets/roti.jpg",
-              tulisan1: "Beli 2 gratis 1",
-              tulisan2: "Untuk Tiap Pembelian Lebih dari 3",
+              tulisan1: "Buy 1 Get 1 Free",
+              tulisan2: "For every product from Toko Buah",
             ),
           ],
         ),
@@ -261,7 +277,7 @@ class _MyAppBarState extends State<MyAppBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

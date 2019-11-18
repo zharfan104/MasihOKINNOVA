@@ -1,14 +1,31 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:masihokeh/main.dart';
 
 var textYellow = Color(0xFFf6c24d);
 
 class PointsPage extends StatelessWidget {
+  final String nama;
+  final String email;
+  final String photourl;
+  final int poin;
+
+  const PointsPage(
+      {Key key,
+      @required this.nama,
+      @required this.email,
+      @required this.photourl,
+      @required this.poin})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    print(poin ?? 10);
     return Scaffold(
       appBar: new AppBar(
+        elevation: 0.1,
         leading: IconButton(
           color: Colors.black,
           onPressed: () {
@@ -26,11 +43,11 @@ class PointsPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          PoinKamu(),
+          PoinKamu(email: email, nama: nama, photourl: photourl, poin: poin),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
             child: Text(
-              'Tukarkan Voucher!',
+              'Redeem Your Voucher!',
               style: TextStyle(
                   fontSize: 22.0,
                   color: Colors.black87,
@@ -38,31 +55,31 @@ class PointsPage extends StatelessWidget {
             ),
           ),
           Divider(),
-          SingleCardProduk(
+          SingleCardVoucher(
             gambar: "assets/indomaret.jpg",
             tulisan1: "Indomaret Voucher!",
             tulisan2: "2 Gratis 1 Setiap Pembelian di Indomaret",
             points: "150",
           ),
-          SingleCardProduk(
-            gambar: "assets/pir.png",
-            tulisan1: "Potongan Buah",
-            tulisan2: "Potongan Rp.5.000 setiap pembelian buah",
-            points: "200",
-          )
+          SingleCardVoucher(
+            gambar: "assets/indomaret.jpg",
+            tulisan1: "Fruit Voucher!",
+            tulisan2: "Beli buah gratis 1 buah lagi!",
+            points: "30",
+          ),
         ],
       ),
     );
   }
 }
 
-class SingleCardProduk extends StatelessWidget {
+class SingleCardVoucher extends StatelessWidget {
   final String gambar;
   final String tulisan1;
   final String tulisan2;
   final String points;
 
-  const SingleCardProduk(
+  const SingleCardVoucher(
       {Key key, this.gambar, this.tulisan1, this.tulisan2, this.points})
       : super(key: key);
 
@@ -122,7 +139,7 @@ class SingleCardProduk extends StatelessWidget {
                           Text(
                             tulisan2,
                             style: TextStyle(
-                                fontSize: 16.0,
+                                fontSize: 10.0,
                                 fontFamily: "opensans",
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white),
@@ -148,8 +165,15 @@ class SingleCardProduk extends StatelessWidget {
                   child: MaterialButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0)),
-                    color: Theme.of(context).accentColor.withOpacity(0.75),
-                    onPressed: () {},
+                    color: Colors.grey,
+                    onPressed: () {
+                      Fluttertoast.showToast(
+                          msg: "Yout point is not enough.",
+                          fontSize: 18.0,
+                          backgroundColor: Colors.grey,
+                          gravity: ToastGravity.BOTTOM,
+                          textColor: Colors.white);
+                    },
                     child: Text(
                       "Tukarkan",
                       style: TextStyle(color: Colors.white, fontSize: 18.0),
@@ -261,6 +285,18 @@ class ItemCard extends StatelessWidget {
 }
 
 class PoinKamu extends StatelessWidget {
+  final String nama;
+  final String email;
+  final String photourl;
+  final int poin;
+
+  const PoinKamu(
+      {Key key,
+      @required this.nama,
+      @required this.email,
+      @required this.photourl,
+      @required this.poin})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -280,8 +316,9 @@ class PoinKamu extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              "https://www.fakenamegenerator.com/images/sil-male.png")),
+                          minRadius: 20.0,
+                          backgroundImage:
+                              NetworkImage(photourl.replaceAll("{}", "/"))),
                     ),
                     SizedBox(
                       width: 10.0,
@@ -293,8 +330,8 @@ class PoinKamu extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => signup_screen()));*/
                       },
-                      child: new Text(
-                        "Zharfan Akbar A",
+                      child: new AutoSizeText(
+                        "$nama",
                         style: TextStyle(
                             fontSize: 22.0,
                             color: Colors.white,
@@ -305,10 +342,6 @@ class PoinKamu extends StatelessWidget {
                       width: 10.0,
                     ),
                     Expanded(child: Container()),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: () {},
-                    )
                   ],
                 ),
                 Row(
@@ -317,11 +350,14 @@ class PoinKamu extends StatelessWidget {
                       width: 65.0,
                     ),
                     Text(
-                      'Poin Kamu : 311 ',
+                      'Point: $poin',
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Colors.white,
                           fontWeight: FontWeight.normal),
+                    ),
+                    SizedBox(
+                      width: 10.0,
                     ),
                     Icon(
                       FontAwesomeIcons.productHunt,

@@ -95,7 +95,7 @@ class Help extends State<HelpScreen> {
                                   margin: EdgeInsets.only(left: 5.0),
                                 ),
                                 Text(
-                                  'Email US',
+                                  'Email Us',
                                   style: TextStyle(
                                     fontSize: 17.0,
                                     color: Colors.black87,
@@ -107,13 +107,13 @@ class Help extends State<HelpScreen> {
                               showDemoDialog<DialogDemoAction>(
                                   context: context,
                                   child: AlertDialog(
-                                      title: const Text('Terms Use'),
+                                      title: const Text('Email Us'),
                                       content: Text(
-                                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                                          "Email to zharfan@student.undip.ac.id.",
                                           style: dialogTextStyle),
                                       actions: <Widget>[
                                         FlatButton(
-                                            child: const Text('DISAGREE'),
+                                            child: const Text('OK'),
                                             onPressed: () {
                                               Navigator.pop(context,
                                                   DialogDemoAction.disagree);
@@ -141,7 +141,7 @@ class Help extends State<HelpScreen> {
                                     margin: EdgeInsets.only(left: 5.0),
                                   ),
                                   Text(
-                                    'About US',
+                                    'About Us',
                                     style: TextStyle(
                                         fontSize: 17.0, color: Colors.black87),
                                   ),
@@ -153,11 +153,11 @@ class Help extends State<HelpScreen> {
                                     child: AlertDialog(
                                         title: const Text('About Us'),
                                         content: Text(
-                                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                                            "MasihOK is an android app created by Undip Student.",
                                             style: dialogTextStyle),
                                         actions: <Widget>[
                                           FlatButton(
-                                              child: const Text('DISAGREE'),
+                                              child: const Text('OK'),
                                               onPressed: () {
                                                 Navigator.pop(context,
                                                     DialogDemoAction.disagree);
@@ -196,11 +196,11 @@ class Help extends State<HelpScreen> {
                                     child: AlertDialog(
                                         title: const Text('Send Feedback'),
                                         content: Text(
-                                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                                            "Send Feedback via mail to zharfan@student.undip.ac.id .",
                                             style: dialogTextStyle),
                                         actions: <Widget>[
                                           FlatButton(
-                                              child: const Text('DISAGREE'),
+                                              child: const Text('OK'),
                                               onPressed: () {
                                                 Navigator.pop(context,
                                                     DialogDemoAction.disagree);

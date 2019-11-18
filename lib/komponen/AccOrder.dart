@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,9 +12,14 @@ class Accorder extends StatefulWidget {
   final String pembeliID;
   final String harga;
   final String nama;
+  final String namaprodusen;
+
   final String jamambil1;
   final String jamambil2;
   final String alamat;
+
+  final String photomasihokeh;
+
   const Accorder(
       {Key key,
       this.produkID,
@@ -22,62 +28,92 @@ class Accorder extends StatefulWidget {
       this.nama,
       this.jamambil1,
       this.jamambil2,
-      this.alamat})
+      this.alamat,
+      this.photomasihokeh,
+      this.namaprodusen})
       : super(key: key);
   @override
-  _AccorderState createState() => _AccorderState(
-      produkID, pembeliID, harga, nama, jamambil1, jamambil2, alamat);
+  _AccorderState createState() => _AccorderState(produkID, pembeliID, harga,
+      nama, jamambil1, jamambil2, alamat, namaprodusen, photomasihokeh);
 }
 
 class _AccorderState extends State<Accorder> {
   String produkID;
   String pembeliID;
   String harga;
+
   String nama;
+
+  String namaprodusen;
+  String namauser;
+
   final String jamambil1;
   final String jamambil2;
   int hargaint;
   String alamat;
   SharedPreferences prefrences;
   String uid;
+  String photomasihokeh;
   var uuid = new Uuid();
   String orderKey;
   int jumlah = 1;
-  _AccorderState(this.produkID, this.pembeliID, this.harga, this.nama,
-      this.jamambil1, this.jamambil2, this.alamat);
+  _AccorderState(
+      this.produkID,
+      this.pembeliID,
+      this.harga,
+      this.nama,
+      this.jamambil1,
+      this.jamambil2,
+      this.alamat,
+      this.namaprodusen,
+      this.photomasihokeh);
   Future handleBeli() async {
-    print("$alamat bangsat");
     prefrences = await SharedPreferences.getInstance();
     uid = prefrences.getString("id");
-    orderKey = uid + "-" + produkID;
+    namauser = prefrences.getString("nama");
 
-    Firestore.instance.collection("order").document(orderKey).setData({
+    orderKey = uid + "-" + produkID;
+    print(nama + namaprodusen);
+    await Firestore.instance
+        .collection("produk")
+        .document(nama + namaprodusen)
+        .updateData({"jumlah": FieldValue.increment(-1 * jumlah)});
+    await Firestore.instance.collection("order").document(orderKey).setData({
       "produkID": produkID,
+      "nama": nama,
+      "jumlah": jumlah,
+      "iscancel": false,
+      "israted": false,
+      "isdone": false,
       "pembeliID": uid,
+      "namauser": namauser,
       "harga": hargaint.toString(),
       "produsenID": produkID.split("-")[1],
       "alamat": alamat,
       "jamambil1": jamambil1,
       "jamambil2": jamambil2,
-      "orderID": uuid.v1().substring(30)
+      "orderID": uuid.v1().substring(30),
+      "namaprodusen": namaprodusen,
+      "photomasihokeh": photomasihokeh
     });
     Fluttertoast.showToast(
-        msg: "Pembelian berhasil, silahkan cek keranjang untuk melihat QRcode");
+        msg: "Order Successful,Check your cart to see your qr code.");
     Application.router.navigateTo(context, "/landing");
   }
 
   @override
   void initState() {
     super.initState();
-    print(produkID);
     hargaint = int.parse(harga);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(32.0))),
       title: new Text(
-        "Konfirmasi Pembelian",
+        "Order Confirmation",
         style: new TextStyle(
           color: Colors.black,
           fontFamily: "bold",
@@ -85,36 +121,63 @@ class _AccorderState extends State<Accorder> {
         ),
       ),
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(
             children: <Widget>[
               Text(
-                "Jumlah Pesan",
+                "Product Name : ",
                 style: TextStyle(
                     color: Colors.black,
                     fontFamily: "bold",
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
-                width: 20.0,
+            ],
+          ),
+          SizedBox(height: 40.0, width: 200.0, child: AutoSizeText("$nama")),
+          Row(
+            children: <Widget>[
+              Text(
+                "Address : ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: "bold",
+                    fontWeight: FontWeight.bold),
               ),
-              IconButton(
-                icon: Icon(
-                  FontAwesomeIcons.plus,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    jumlah++;
-                    hargaint = int.parse(harga) * jumlah;
-                  });
-                },
+            ],
+          ),
+          SizedBox(height: 50.0, width: 200.0, child: AutoSizeText("$alamat")),
+          Row(
+            children: <Widget>[
+              Text(
+                "Time to Take : ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: "bold",
+                    fontWeight: FontWeight.bold),
               ),
-              Text(jumlah.toString()),
+            ],
+          ),
+          SizedBox(
+              height: 20.0,
+              width: 200.0,
+              child: AutoSizeText("$jamambil1 - $jamambil2")),
+          Row(
+            children: <Widget>[
+              Text(
+                "Order: ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: "bold",
+                    fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Container(),
+              ),
               IconButton(
                 icon: Icon(
                   FontAwesomeIcons.minus,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
                 onPressed: () {
                   setState(() {
@@ -124,10 +187,41 @@ class _AccorderState extends State<Accorder> {
                     }
                   });
                 },
-              )
+              ),
+              Text(jumlah.toString()),
+              IconButton(
+                icon: Icon(
+                  FontAwesomeIcons.plus,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  setState(() {
+                    jumlah++;
+                    hargaint = int.parse(harga) * jumlah;
+                  });
+                },
+              ),
             ],
           ),
-          Text("harga ${hargaint.toString()}")
+          Row(
+            children: <Widget>[
+              Text(
+                "Price Total : ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: "bold",
+                    fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Container(),
+              ),
+              Text(
+                "${hargaint.toString()}",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              )
+            ],
+          )
         ],
       ),
       actions: <Widget>[
@@ -158,7 +252,7 @@ class _AccorderState extends State<Accorder> {
                 handleBeli();
               },
               child: new Text(
-                "Beli!",
+                "Order!",
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: "openbold",

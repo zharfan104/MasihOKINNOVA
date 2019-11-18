@@ -27,6 +27,8 @@ class NewToko extends StatefulWidget {
 class NewTokoState extends State<NewToko> {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   String nama;
+  SharedPreferences prefrences;
+
   String deskripsiproduk;
   String url;
   String urlfix;
@@ -64,6 +66,9 @@ class NewTokoState extends State<NewToko> {
           .collection("users")
           .document(user.uid)
           .updateData({"toko": true});
+      prefrences = await SharedPreferences.getInstance();
+
+      await prefrences.setBool('masihokeh', true);
 
       Firestore.instance.collection("masihokeh").document(user.uid).setData({
         "uid": user.uid,
@@ -129,7 +134,7 @@ class NewTokoState extends State<NewToko> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          "Pendaftaran Toko Baru",
+          "Register New Store",
           style: TextStyle(
               color: Colors.black, fontFamily: "openbold", fontSize: 18.0),
         ),
@@ -153,7 +158,7 @@ class NewTokoState extends State<NewToko> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Center(
                 child: Text(
-                  "Logo Toko",
+                  "Store Logo",
                   style: TextStyle(color: Colors.black54, fontSize: 12.0),
                 ),
               )),
@@ -173,7 +178,7 @@ class NewTokoState extends State<NewToko> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Deskripsi Toko",
+              "Store Description",
               style: TextStyle(fontSize: 20.0),
             ),
           ),
@@ -194,8 +199,8 @@ class NewTokoState extends State<NewToko> {
                     FontAwesomeIcons.dotCircle,
                     color: Colors.black38,
                   ),
-                  hintText: 'Masukkan Nama Toko',
-                  labelText: 'Nama Toko',
+                  hintText: 'Enter your store name',
+                  labelText: 'Store Name',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
             ),
@@ -219,9 +224,8 @@ class NewTokoState extends State<NewToko> {
                     FontAwesomeIcons.stickyNote,
                     color: Colors.black38,
                   ),
-                  labelText: 'Deskripsi Toko',
-                  hintText:
-                      'Sebuah masihokeh serba ada yang menjual berbagai snack dan minuman',
+                  labelText: 'Store Description',
+                  hintText: 'EVENT BEM UNDIP, FIGHT FOOD WASTE!',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
             ),
@@ -245,7 +249,7 @@ class NewTokoState extends State<NewToko> {
                     FontAwesomeIcons.stickyNote,
                     color: Colors.black38,
                   ),
-                  labelText: 'Alamat Toko',
+                  labelText: 'Store Address',
                   hintText: 'Jl. Pahlawan No.45, Kota Majalengka, Jawa Barat',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
@@ -269,7 +273,7 @@ class NewTokoState extends State<NewToko> {
                     color: Colors.black38,
                   ),
                   hintText: 'Semarang',
-                  labelText: 'Kota Toko',
+                  labelText: 'Store City',
                   labelStyle: TextStyle(color: Colors.black54)),
               keyboardType: TextInputType.text,
             ),
@@ -327,13 +331,13 @@ class NewTokoState extends State<NewToko> {
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Text(
-                    "Buat Toko!",
+                    "Open a store!",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
                 onPressed: () {
                   if (_image == null) {
-                    Fluttertoast.showToast(msg: "Tolong pilih foto produk");
+                    Fluttertoast.showToast(msg: "Please choose an image.");
                   } else {
                     jadiToko();
                   }

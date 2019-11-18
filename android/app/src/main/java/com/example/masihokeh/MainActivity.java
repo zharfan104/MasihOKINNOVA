@@ -1,4 +1,4 @@
-package com.example.masihokeh;
+package com.inovasia.masihokeh;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

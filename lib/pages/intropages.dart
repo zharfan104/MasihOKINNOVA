@@ -16,7 +16,7 @@ class _MyAppState extends State<MyApp> {
         seconds: 2,
         navigateAfterSeconds: new LoginScreen(),
         title: new Text(
-          'Selamat Datang\n Di masihOK',
+          'Welcome to\n MasihOK',
           style: TextStyle(
               color: Colors.black, fontFamily: 'pacifico', fontSize: 32.0),
         ),

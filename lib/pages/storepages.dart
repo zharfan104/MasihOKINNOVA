@@ -48,11 +48,15 @@ class Store extends State<StorePage> {
           .getDocuments();
       final List<DocumentSnapshot> documents = result.documents;
       if (documents.length == 0) {
+        await prefrences.setBool("masihokeh", false);
+
         print(documents.length);
         setState(() {
           masihokeh = false;
         });
       } else {
+        await prefrences.setBool("masihokeh", true);
+
         setState(() {
           nama = documents[0]['nama'];
           photoUrl = documents[0]['photourl'] ??
@@ -191,7 +195,7 @@ class Store extends State<StorePage> {
                                       margin: EdgeInsets.only(left: 10.0),
                                     ),
                                     Text(
-                                      'Tambah Produk',
+                                      'Add Product',
                                       style: TextStyle(
                                         fontSize: 17.0,
                                         color: Colors.black87,
@@ -219,7 +223,7 @@ class Store extends State<StorePage> {
                                         margin: EdgeInsets.only(left: 10.0),
                                       ),
                                       Text(
-                                        'Pesanan Masuk',
+                                        'Order Confirmation',
                                         style: TextStyle(
                                             fontSize: 17.0,
                                             color: Colors.black87),
@@ -245,7 +249,7 @@ class Store extends State<StorePage> {
                                         margin: EdgeInsets.only(left: 10.0),
                                       ),
                                       Text(
-                                        'Riwayat Pemesanan',
+                                        'Order History',
                                         style: TextStyle(
                                             fontSize: 17.0,
                                             color: Colors.black87),
@@ -268,7 +272,7 @@ class Store extends State<StorePage> {
                                         margin: EdgeInsets.only(left: 10.0),
                                       ),
                                       Text(
-                                        ' Pindai QR Code',
+                                        ' Scan QR Code',
                                         style: TextStyle(
                                             fontSize: 17.0,
                                             color: Colors.black87),
@@ -289,6 +293,7 @@ class Store extends State<StorePage> {
       } else {
         return Scaffold(
           appBar: new AppBar(
+            elevation: 0.0,
             leading: IconButton(
               color: Colors.black,
               onPressed: () {
@@ -311,7 +316,7 @@ class Store extends State<StorePage> {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    "Apakah kamu ingin  menjual makananmu?",
+                    "Do you want to open a store?",
                     style: TextStyle(fontSize: 28.0),
                   ),
                 ),
@@ -319,7 +324,7 @@ class Store extends State<StorePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: MaterialButton(
                     child: Text(
-                      "Buat masihokeh!",
+                      "Open a store",
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () {

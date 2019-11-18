@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:masihokeh/main.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -36,12 +37,12 @@ class Account extends State<AccountScreen> {
       final List<DocumentSnapshot> documents = result.documents;
       setState(() {
         nama = documents[0]['nama'];
-        photoUrl = documents[0]['profilePicture'] ??
+        photoUrl = documents[0]['photourl'] ??
             "https://www.fakenamegenerator.com/images/sil-male.png";
         email = documents[0]['email'];
-        if (documents[0]['masihokeh']) {
-          status = "masihokeh";
-        }
+        // if (documents[0]['masihokeh']) {
+        //   status = "masihokeh";
+        // }
       });
       setState(() {
         loading = false;
@@ -190,57 +191,68 @@ class Account extends State<AccountScreen> {
                 ),
               ),
             ),
-            new Container(
-              margin: EdgeInsets.all(7.0),
-              child: Card(
-                elevation: 1.0,
-                child: Row(
-                  children: <Widget>[
-                    new IconButton(icon: keyloch, onPressed: null),
-                    _verticalD(),
-                    new Text(
-                      'Change Password',
-                      style: TextStyle(fontSize: 15.0, color: Colors.black87),
-                    )
-                  ],
+            InkWell(
+              onTap: () {
+                _underDevelopment();
+              },
+              child: new Container(
+                margin: EdgeInsets.all(7.0),
+                child: Card(
+                  elevation: 1.0,
+                  child: Row(
+                    children: <Widget>[
+                      new IconButton(icon: keyloch, onPressed: null),
+                      _verticalD(),
+                      Text(
+                        'Change Password',
+                        style: TextStyle(fontSize: 15.0, color: Colors.black87),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-            new Container(
-              margin: EdgeInsets.all(7.0),
-              child: Card(
-                elevation: 1.0,
-                child: Row(
-                  children: <Widget>[
-                    new IconButton(icon: clear, onPressed: null),
-                    _verticalD(),
-                    new Text(
-                      'Clear History',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.black87,
-                      ),
-                    )
-                  ],
+            InkWell(
+              onTap: _underDevelopment,
+              child: new Container(
+                margin: EdgeInsets.all(7.0),
+                child: Card(
+                  elevation: 1.0,
+                  child: Row(
+                    children: <Widget>[
+                      new IconButton(icon: clear, onPressed: null),
+                      _verticalD(),
+                      new Text(
+                        'Clear History',
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          color: Colors.black87,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-            new Container(
-              margin: EdgeInsets.all(7.0),
-              child: Card(
-                elevation: 1.0,
-                child: Row(
-                  children: <Widget>[
-                    new IconButton(icon: logout, onPressed: null),
-                    _verticalD(),
-                    new Text(
-                      'Deactivate Account',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
+            InkWell(
+              onTap: _underDevelopment,
+              child: new Container(
+                margin: EdgeInsets.all(7.0),
+                child: Card(
+                  elevation: 1.0,
+                  child: Row(
+                    children: <Widget>[
+                      new IconButton(icon: logout, onPressed: null),
+                      _verticalD(),
+                      new Text(
+                        'Deactivate Account',
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             )
@@ -250,6 +262,14 @@ class Account extends State<AccountScreen> {
     }
   }
 
+  _underDevelopment() => Fluttertoast.showToast(
+      msg: "Fitur masih tahap pengembangan",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIos: 1,
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      fontSize: 16.0);
   _verticalDivider() => Container(
         padding: EdgeInsets.all(2.0),
       );

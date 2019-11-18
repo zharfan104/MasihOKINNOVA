@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,26 +8,43 @@ import 'package:fluro/fluro.dart';
 import 'package:masihokeh/pages/logind_signup.dart';
 
 class DrawerKu extends StatefulWidget {
+  final String id;
+
+  DrawerKu({Key key, @required this.id}) : super(key: key);
+
   @override
   _DrawerKuState createState() => _DrawerKuState();
 }
 
 class _DrawerKuState extends State<DrawerKu> {
-  String email;
-  String photourl;
-  String nama;
+  String email = "wait..";
+  int poin;
+  String photourl =
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+  String nama = "wait..";
   @override
   void initState() {
-    super.initState();
     getemail();
+
+    super.initState();
   }
 
   getemail() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     setState(() {
       email = prefs.getString('email') ?? 'a@gmail.com';
       nama = prefs.getString('nama') ?? 'a@gmail.com';
       photourl = prefs.getString('photourl') ?? 'a@gmail.com';
+    });
+    final QuerySnapshot result = await Firestore.instance
+        .collection("users")
+        .where("id", isEqualTo: widget.id)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+    print(documents[0]['poin']);
+    setState(() {
+      poin = documents[0]['poin'];
     });
     print(email + nama + photourl);
   }
@@ -49,7 +67,7 @@ class _DrawerKuState extends State<DrawerKu> {
                     accountEmail: new Text(email),
                     decoration: new BoxDecoration(
                       backgroundBlendMode: BlendMode.difference,
-                      color: Colors.white30,
+                      color: Colors.grey,
 
                       /* image: new DecorationImage(
                      //   image: new ExactAssetImage('assets/images/lake.jpeg'),
@@ -67,35 +85,37 @@ class _DrawerKuState extends State<DrawerKu> {
               child: new Column(
                 children: <Widget>[
                   Hero(
-                    tag: "My Points",
+                    tag: "My Point",
                     transitionOnUserGestures: true,
                     child: new ListTile(
                         leading: Icon(FontAwesomeIcons.star),
-                        title: new Text("My Points"),
+                        title: new Text("My Point"),
                         onTap: () {
-                          Application.router.navigateTo(context, "/points",
+                          // Application.router.navigateTo(context,
+                          //     "/points?nama=$nama&photourl=$photourl&email=$email",
+                          //     transition: TransitionType.fadeIn);
+                          String photo = photourl.replaceAll("/", "{}");
+                          // print(poin);
+                          Application.router.navigateTo(
+                              context, "/mypoin/$email/$nama/$photo/$poin",
                               transition: TransitionType.fadeIn);
                         }),
                   ),
                   new Divider(),
-                  new Card(
-                    elevation: 4.0,
-                    child: new Column(
-                      children: <Widget>[
-                        Hero(
-                          tag: "My Store",
-                          transitionOnUserGestures: true,
-                          child: new ListTile(
-                              leading: Icon(FontAwesomeIcons.store),
-                              title: new Text("My Store"),
-                              onTap: () {
-                                Application.router.navigateTo(context, "/store",
-                                    transition: TransitionType.fadeIn);
-                              }),
-                        ),
-                        new Divider(),
-                      ],
-                    ),
+                  Column(
+                    children: <Widget>[
+                      Hero(
+                        tag: "My Store",
+                        transitionOnUserGestures: true,
+                        child: new ListTile(
+                            leading: Icon(FontAwesomeIcons.store),
+                            title: new Text("My Store"),
+                            onTap: () {
+                              Application.router.navigateTo(context, "/store",
+                                  transition: TransitionType.fadeIn);
+                            }),
+                      ),
+                    ],
                   ),
                 ],
               ),

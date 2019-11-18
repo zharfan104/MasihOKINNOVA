@@ -23,6 +23,7 @@ class Routes {
     });
 
     router.define("/", handler: introHandler);
+    router.define("/camera", handler: cameraHandler);
     router.define(landing, handler: landingHandler);
     router.define("/newmasihokeh", handler: newmasihokehHandler);
 
@@ -40,11 +41,15 @@ class Routes {
     router.define("/qrcode", handler: qrcodeHandler);
     router.define("/search", handler: searchHandler);
     router.define("/accorder", handler: acceptorderHandler);
-    router.define("/points", handler: pointsHandler);
     router.define("/store", handler: storeHandler);
     router.define("/history2", handler: historyHandler);
+    router.define("/historypembeli", handler: historyPembeliHandler);
+
     router.define("/addproduk", handler: addProdukHandler);
     router.define("/orderin", handler: orderInHandler);
     router.define("/scanqr", handler: scanQRHandler);
+    router.define("/mypoin/:email/:nama/:photourl/:poin", handler: poinHandler);
+
+    router.define("/chat", handler: chatHandler);
   }
 }

@@ -17,24 +17,6 @@ class _CartState extends State<Cart> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: Icon(
-              Icons.menu,
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          title: Text(
-            "MasihOK",
-            style: TextStyle(
-                color: Colors.black, fontFamily: "pacifico", fontSize: 30.0),
-          ),
-        ),
         Container(color: Colors.white, child: MyAppBar()),
         Expanded(child: Container(color: Colors.white, child: OderHistory()))
       ],
@@ -51,18 +33,26 @@ class MyAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: <Widget>[
-          SizedBox(
-            height: 25.0,
-          ),
           Center(
             child: Text(
               "Your Order",
               style: TextStyle(fontSize: 25.0, fontFamily: "openbold"),
             ),
           ),
+          Align(
+              alignment: Alignment.centerRight,
+              child: FlatButton(
+                  onPressed: () {
+                    Application.router.navigateTo(
+                      context,
+                      "/historypembeli",
+                      transition: TransitionType.inFromRight,
+                      transitionDuration: const Duration(milliseconds: 200),
+                    );
+                  },
+                  child: Text("History"))),
         ],
       ),
     );

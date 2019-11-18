@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:masihokeh/komponen/AccOrder.dart';
+import 'package:masihokeh/komponen/orderHistoryPembeli.dart';
 import 'package:masihokeh/komponen/orderhistory_screen.dart';
 import 'package:masihokeh/komponen/qrcode.dart';
 import 'package:masihokeh/komponen/reciepts.dart';
@@ -8,6 +9,9 @@ import 'package:masihokeh/pages/Account_screen.dart';
 import 'package:masihokeh/pages/PindaiQR.dart';
 import 'package:masihokeh/pages/Search.dart';
 import 'package:masihokeh/pages/addproduk.dart';
+import 'package:masihokeh/pages/camera.dart';
+import 'package:masihokeh/pages/chat/chat.dart';
+import 'package:masihokeh/pages/chat/main.dart';
 import 'package:masihokeh/pages/help_screen.dart';
 import 'package:masihokeh/pages/history.dart';
 import 'package:masihokeh/pages/instantsearch.dart';
@@ -52,6 +56,7 @@ var qrcodeHandler = Handler(
               orderID: orderID,
             );
           });
+      return;
     });
 var acceptorderHandler = Handler(
     type: HandlerType.function,
@@ -62,23 +67,34 @@ var acceptorderHandler = Handler(
       String namaproduk = params["namaproduk"]?.first ?? "as";
       String jamambil1 = params["jamambil1"]?.first ?? "as";
       String jamambil2 = params["jamambil2"]?.first ?? "as";
+      String namaprodusen = params["namaprodusen"]?.first ?? "as";
+      String photomasihokeh = params["photomasihokeh"]?.first ?? "as";
+      photomasihokeh = photomasihokeh.replaceAll("/", "%2f");
+
+      photomasihokeh =
+          photomasihokeh.replaceAll(new RegExp(r'garinggaring'), "/");
+
+      photomasihokeh = photomasihokeh.replaceAll(new RegExp(r'bagibagi'), ":");
+      photomasihokeh =
+          photomasihokeh.replaceAll(new RegExp(r'tanyatanya'), "?");
+      photomasihokeh = photomasihokeh.replaceAll(new RegExp(r'dashdash'), "-");
+      photomasihokeh = photomasihokeh.replaceAll(new RegExp(r'dandan'), "&");
+
       String alamatmasihokeh =
           params["alamatmasihokeh"]?.first ?? "ini alamatnya";
-      print("di handler $alamatmasihokeh");
-      print(params);
-      print(params);
       showDialog(
           context: context,
           builder: (context) {
             return new Accorder(
-              pembeliID: pembeliID,
-              produkID: produkID,
-              harga: harga,
-              nama: namaproduk,
-              jamambil1: jamambil1,
-              jamambil2: jamambil2,
-              alamat: alamatmasihokeh,
-            );
+                pembeliID: pembeliID,
+                produkID: produkID,
+                harga: harga,
+                nama: namaproduk,
+                jamambil1: jamambil1,
+                jamambil2: jamambil2,
+                namaprodusen: namaprodusen,
+                photomasihokeh: photomasihokeh,
+                alamat: alamatmasihokeh);
           });
     });
 var searchHandler = Handler(
@@ -94,6 +110,20 @@ var helpHandler = Handler(
   return HelpScreen(
     toolbarname: "Halo",
   );
+});
+var chatHandler = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String currentUserId = params["id"][0] ?? "as";
+  String masihokeh = params["masihokeh"][0] ?? "as";
+  print(masihokeh);
+  return MainScreen(
+    currentUserId: currentUserId,
+    masihokeh: masihokeh,
+  );
+});
+var cameraHandler = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return Camera();
 });
 var loginHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -113,9 +143,20 @@ var introHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return MyApp();
 });
-var pointsHandler = Handler(
+var poinHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  return PointsPage();
+  String email = params["email"][0] ?? "as";
+  String nama = params["nama"][0] ?? "as";
+  String photourl = params["photourl"][0] ?? "as";
+  int poin = int.parse(params["poin"][0]) ?? 0;
+  print("poinnya $poin");
+  print("$email asdasdasd $nama, $photourl");
+  return PointsPage(
+    poin: poin,
+    email: email,
+    nama: nama,
+    photourl: photourl,
+  );
 });
 var storeHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -143,6 +184,10 @@ var productDetailsHandler = Handler(
 var historyHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return History();
+});
+var historyPembeliHandler = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return OrderHistoryPembeliScreen();
 });
 var instantsearchHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
